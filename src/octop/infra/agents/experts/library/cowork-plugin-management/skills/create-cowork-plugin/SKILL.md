@@ -3,8 +3,8 @@ name: create-cowork-plugin
 description: >
   Guide users through creating a new plugin from scratch in a cowork session.
   Use when users want to create a plugin, build a plugin, make a new plugin, develop a plugin, scaffold a plugin, start a plugin from scratch, or design a plugin.
-  This skill requires Cowork mode with access to the outputs directory for delivering the final .plugin file.
-compatibility: Requires Cowork desktop app environment with access to the outputs directory for delivering .plugin files.
+  This skill runs in the Octop agent workspace and delivers the final .plugin file as a workspace file.
+compatibility: Runs in the Octop agent workspace; deliverables are workspace files (no mounted plugin directories or outputs folder required).
 ---
 
 # Create Cowork Plugin
@@ -245,14 +245,12 @@ If the user says "whatever you think is best," provide specific recommendations 
 4. Package as a `.plugin` file:
 
 ```bash
-cd /path/to/plugin-dir && zip -r /tmp/plugin-name.plugin . -x "*.DS_Store" && cp /tmp/plugin-name.plugin /path/to/outputs/plugin-name.plugin
+cd /path/to/plugin-dir && zip -r deliverables/plugin-name.plugin . -x "*.DS_Store"
 ```
 
-> **Important**: Always create the zip in `/tmp/` first, then copy to the outputs folder. Writing directly to the outputs folder may fail due to permissions.
+Create the archive inside this workspace (e.g., a `deliverables/` folder) — do not write to `/tmp/` or other system paths, since the user can only access files inside the workspace. Tell the user they can download `<name>.plugin` from the workspace file panel and install it into Claude Code / Cowork. The package format is the Claude plugin format; it is consumed by Claude, not by Octop.
 
 > **Naming**: Use the plugin name from `plugin.json` for the `.plugin` file (e.g., if name is `code-reviewer`, output `code-reviewer.plugin`).
-
-The `.plugin` file will appear in the chat as a rich preview where the user can browse the files and accept the plugin by pressing a button.
 
 ## Best Practices
 

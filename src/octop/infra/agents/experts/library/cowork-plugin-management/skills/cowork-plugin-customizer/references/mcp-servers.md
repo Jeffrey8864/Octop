@@ -4,7 +4,9 @@ How to find and connect MCPs during plugin customization.
 
 ## Available Tools
 
-### `search_mcp_registry`
+> **Octop note**: `search_mcp_registry` and `suggest_connectors` are Cowork desktop built-in tools and are not available here. In Octop, identify candidate MCP servers by tool name or official MCP endpoint (the keyword mapping below still applies), then have the user connect the tool in their connector settings and write the endpoint into the plugin's `.mcp.json` as usual.
+
+### `search_mcp_registry` (Cowork only)
 Search the MCP directory for available connectors.
 
 **Input:** `{ "keywords": ["array", "of", "search", "terms"] }`
@@ -47,10 +49,10 @@ Display Connect buttons to let users install/connect MCPs.
 2. **Check earlier phase findings**: Did you already learn which tool they use?
    - **Yes**: Search for that specific tool to get its `url`, skip to step 5
    - **No**: Continue to step 3
-3. **Search**: Call `search_mcp_registry` with mapped keywords
-4. **Present choices and ask user**: Show all results, ask which they use
-5. **Connect if needed**: If not connected, call `suggest_connectors`
-6. **Update MCP config**: Add config using the `url` from search results
+3. **Search**: Identify candidate MCP servers using the mapped keywords (tool name or official MCP endpoint; on Cowork, `search_mcp_registry`)
+4. **Present choices and ask user**: Show all candidates, ask which they use
+5. **Connect if needed**: Have the user connect the tool in their platform's connector settings
+6. **Update MCP config**: Add config using the tool's MCP endpoint `url`
 
 ## Updating Plugin MCP Configuration
 
@@ -84,7 +86,7 @@ Both wrapped and unwrapped formats are supported:
 }
 ```
 
-Use the `url` field from `search_mcp_registry` results.
+Use the MCP endpoint `url` for the tool (from the registry on Cowork, or the tool's official MCP endpoint).
 
 ### Directory Entries Without a URL
 

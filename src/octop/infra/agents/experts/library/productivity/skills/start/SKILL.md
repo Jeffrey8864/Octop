@@ -29,7 +29,7 @@ Check the working directory for:
 
 ### 3. Open the Dashboard
 
-Do NOT use `open` or `xdg-open` — in Cowork, the agent runs in a VM and shell open commands won't reach the user's browser. Instead, tell the user: "Dashboard is ready at `dashboard.html`. Open it from your file browser to get started."
+Do NOT use `open` or `xdg-open` — the agent runs server-side and shell open commands cannot reach the user's browser. Instead, tell the user: "Dashboard is ready at `dashboard.html` in the workspace — open or download it from the workspace file panel to get started."
 
 ### 4. Orient the User
 

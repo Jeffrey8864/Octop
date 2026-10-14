@@ -4,14 +4,16 @@ description: >
   Customize a Claude Code plugin for a specific organization's tools and workflows.
   Use when: customize plugin, set up plugin, configure plugin, tailor plugin, adjust plugin settings,
   customize plugin connectors, customize plugin skill, tweak plugin, modify plugin configuration.
-compatibility: Requires Cowork desktop app environment with access to mounted plugin directories (mnt/.local-plugins, mnt/.plugins).
+compatibility: Runs in the Octop agent workspace. The plugin directory is a workspace folder (uploaded or scaffolded here); results are delivered as workspace files.
 ---
 
 # Cowork Plugin Customization
 
 Customize a plugin for a specific organization — either by setting up a generic plugin template for the first time, or by tweaking and refining an already-configured plugin.
 
-> **Finding the plugin**: To find the plugin's source files, run `find mnt/.local-plugins mnt/.plugins -type d -name "*<plugin-name>*"` to locate the plugin directory, then read its files to understand its structure before making changes. If you cannot find the plugin directory, the user is likely running this conversation in a remote container. Abort and let them know: "Customizing plugins is currently only available in the desktop app's Cowork mode."
+> **Target format**: this skill customizes Claude Code / Cowork plugin packages (`.claude-plugin/plugin.json` + `skills/` ...). That is the deliverable format — distinct from the Octop expert-library format (`manifest.json`); do not conflate the two.
+
+> **Finding the plugin**: The plugin's source files live inside this workspace. Ask the user which directory holds the plugin, or search the workspace for `.claude-plugin/plugin.json` to locate it, then read its files to understand its structure before making changes. If the plugin is not in the workspace yet, ask the user to upload or provide its files first — do not abort.
 
 ## Determining the Customization Mode
 
@@ -97,23 +99,22 @@ After customization items have been resolved, connect MCPs for any tools that we
 
 For each tool identified during customization:
 
-1. Search the registry: `search_mcp_registry(keywords=[...])` using category keywords from `references/mcp-servers.md`, or search for the specific tool name if already known
-2. If unconnected: `suggest_connectors(directoryUuids=["chosen-uuid"])` — user completes auth
+1. Identify candidate MCP servers for each tool, using the category keywords from `references/mcp-servers.md` or the tool's official MCP endpoint
+2. If the tool is not yet connected on the user's platform, tell them to connect it in the connector settings and note it in the summary
 3. Update the plugin's MCP config file (check `plugin.json` for custom location, otherwise `.mcp.json` at root)
 
 Collect all MCP results and present them together in the summary output (see below) — don't present MCPs one at a time during this phase.
 
 ## Packaging the Plugin
 
-After all customizations are applied, package the plugin as a `.plugin` file for the user:
+After all customizations are applied, package the plugin for the user:
 
-1. **Zip the plugin directory** (excluding `setup/` since it's no longer needed):
+1. **Zip the plugin directory** (excluding `setup/` since it's no longer needed) into a workspace folder (e.g., `deliverables/`):
    ```bash
-   cd /path/to/plugin && zip -r /tmp/plugin-name.plugin . -x "setup/*" && cp /tmp/plugin-name.plugin /path/to/outputs/plugin-name.plugin
+   cd /path/to/plugin && zip -r deliverables/plugin-name.plugin . -x "setup/*"
    ```
-2. **Present the file to the user** with the `.plugin` extension so they can install it directly. (Presenting the .plugin file will show to the user as a rich preview where they can look through the plugin files, and they can accept the customization by pressing a button.)
-
-> **Important**: Always create the zip in `/tmp/` first, then copy to the outputs folder. Writing directly to the outputs folder may fail due to permissions and leave behind temporary files.
+   Do not write to `/tmp/` or other system paths — the user can only access files inside this workspace.
+2. **Tell the user** the archive location: they can download `<name>.plugin` from the workspace file panel and install it into Claude Code / Cowork. The package format is the Claude plugin format (`.claude-plugin/plugin.json` + `skills/` ...); it is consumed by Claude, not by Octop.
 
 > **Naming**: Use the original plugin directory name for the `.plugin` file (e.g., if the plugin directory is `coder`, the output file should be `coder.plugin`). Do not rename the plugin or its files during customization — only replace placeholder values and update content.
 
